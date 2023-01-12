@@ -1,0 +1,9 @@
+[[Auth-API]]
+= *Auth API*
+
+[[회원가입-API]]
+== *1. 회원가입-API*
+
+==== *1-1* 프로필 없는 경우
+
+operation::auth-controller-test/given-all-info_then-success[snippets='http-request,request-parameters,response-body']
