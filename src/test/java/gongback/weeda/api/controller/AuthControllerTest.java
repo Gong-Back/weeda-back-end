@@ -2,6 +2,7 @@ package gongback.weeda.api.controller;
 
 import gongback.weeda.api.controller.request.SignUpRequest;
 import gongback.weeda.common.TestProvider;
+import gongback.weeda.common.base.RestDocsSupport;
 import gongback.weeda.common.config.SecurityConfig;
 import gongback.weeda.common.type.SocialType;
 import gongback.weeda.domain.user.entity.User;
@@ -14,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
@@ -22,13 +22,12 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 
 @Import(SecurityConfig.class)
 @WebFluxTest(AuthController.class)
-class AuthControllerTest {
-
-    @Autowired
-    WebTestClient webTestClient;
+class AuthControllerTest extends RestDocsSupport {
 
     @MockBean
     AuthService authService;
@@ -41,14 +40,13 @@ class AuthControllerTest {
     void givenAllInfo_thenSuccess() throws Exception {
         // given
         User testUser = TestProvider.createTestUser();
-        LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.put("email", List.of(testUser.getEmail()));
-        multiValueMap.put("password", List.of(testUser.getPassword()));
-        multiValueMap.put("name", List.of(testUser.getName()));
-        multiValueMap.put("nickname", List.of(testUser.getNickname()));
-        multiValueMap.put("age", List.of(testUser.getAge().toString()));
-        multiValueMap.put("gender", List.of(testUser.getGender()));
-        multiValueMap.put("socialType", List.of(SocialType.WEEDA.toString()));
+        LinkedMultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.put("email", List.of(testUser.getEmail()));
+        formData.put("password", List.of(testUser.getPassword()));
+        formData.put("name", List.of(testUser.getName()));
+        formData.put("nickname", List.of(testUser.getNickname()));
+        formData.put("age", List.of(testUser.getAge().toString()));
+        formData.put("gender", List.of(testUser.getGender()));
         SignUpRequest testSignUpRequest = TestProvider.createTestSignUpRequest(testUser);
 
         // when
@@ -58,11 +56,19 @@ class AuthControllerTest {
         // then
         webTestClient.post()
                 .uri("/api/v1/auth/sign-up")
-                .body(BodyInserters.fromFormData(multiValueMap))
+                .body(BodyInserters.fromFormData(formData))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody()
                 .jsonPath("code").isEqualTo(201)
+                .consumeWith(getRequestParameterDocument(requestParameters(
+                        parameterWithName("email").description("이메일").attributes(field("example", testUser.getEmail()), field("length", "0-20")),
+                        parameterWithName("password").description("비밀번호").attributes(field("example", testUser.getPassword()), field("length", "10-15")),
+                        parameterWithName("name").description("이름").attributes(field("example", testUser.getName())),
+                        parameterWithName("nickname").description("닉네임").attributes(field("example", testUser.getNickname())),
+                        parameterWithName("age").description("나이").attributes(field("example", String.valueOf(testUser.getAge()))),
+                        parameterWithName("gender").description("성별").attributes(field("example", testUser.getGender()))
+                )))
                 .consumeWith(System.out::println);
     }
 
