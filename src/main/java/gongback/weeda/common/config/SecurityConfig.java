@@ -24,7 +24,7 @@ public class SecurityConfig {
 
                 .authorizeExchange(
                         authorize ->
-                                authorize.pathMatchers("/api/v1/auth/**").permitAll()
+                                authorize.pathMatchers("/api/v1/auth/**", "/api-docs").permitAll()
                                         .anyExchange().authenticated()
                 );
 
