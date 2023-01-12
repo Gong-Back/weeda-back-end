@@ -14,11 +14,10 @@ public enum ResponseCode {
     NOT_FOUND(HttpStatus.NOT_FOUND.value(), "Requested Resource Is Not Found"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED.value(), "Token is invalid"),
     INVALID_PERMISSION(HttpStatus.FORBIDDEN.value(), "Permission is invalid"),
-    ALREADY_LIKED(HttpStatus.CONFLICT.value(), "Member already liked the post"),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "BadRequest"),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "Bad request"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error"),
 
-    REQUEST_VALIDATION_ERROR(430, "Validation error");
+    REQUEST_VALIDATION_ERROR(430, "Request value validation error");
 
     private final int code;
     private final String msg;

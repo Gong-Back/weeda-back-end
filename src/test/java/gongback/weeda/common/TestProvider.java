@@ -10,7 +10,7 @@ public class TestProvider {
     public static User createTestUser() {
         int randomValue = new Random().nextInt();
         return User.builder()
-                .email("test" + randomValue + "@test.com")
+                .email("test" + Math.abs(randomValue) + "@test.com")
                 .password("test123456")
                 .name("testUser")
                 .nickname("NK" + randomValue)
