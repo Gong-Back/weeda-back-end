@@ -4,7 +4,7 @@ import gongback.weeda.api.controller.response.ErrorDetailResponse;
 import gongback.weeda.api.controller.response.ErrorResponse;
 import gongback.weeda.common.exception.ResponseCode;
 import gongback.weeda.common.exception.WeedaApplicationException;
-import gongback.weeda.utils.CreateEntityUtil;
+import gongback.weeda.common.provider.EntityProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,7 +33,7 @@ public class BasicControllerAdvice {
     @ExceptionHandler(WeedaApplicationException.class)
     public Mono<ResponseEntity> weedaApplicationException(WeedaApplicationException e) {
         log.error("[WeedaApplicationException]", e);
-        return Mono.just(CreateEntityUtil.response(e.getResponseCode()));
+        return Mono.just(EntityProvider.response(e.getResponseCode()));
     }
 
     @ExceptionHandler(RuntimeException.class)
@@ -42,10 +42,10 @@ public class BasicControllerAdvice {
 
         if (e instanceof WebExchangeBindException) {
             ArrayList<ErrorDetailResponse> errors = getErrorDetailResponses((WebExchangeBindException) e);
-            return Mono.just(CreateEntityUtil.response(ResponseCode.REQUEST_VALIDATION_ERROR, ErrorResponse.of(errors)));
+            return Mono.just(EntityProvider.response(ResponseCode.REQUEST_VALIDATION_ERROR, ErrorResponse.of(errors)));
         }
 
-        return Mono.just(CreateEntityUtil.response(ResponseCode.INTERNAL_SERVER_ERROR));
+        return Mono.just(EntityProvider.response(ResponseCode.INTERNAL_SERVER_ERROR));
     }
 }
 
