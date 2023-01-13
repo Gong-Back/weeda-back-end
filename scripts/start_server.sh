@@ -9,8 +9,8 @@ APPLICATION_LOG_PATH="/home/ec2-user/$PROJECT_NAME/log/application.log" # Applic
 BUILD_JAR=$(ls $JAR_PATH)
 JAR_NAME=$(basename $BUILD_JAR)
 
+mkdir DEPLOY_PATH/log
 cd DEPLOY_PATH
-mkdir log
 
 echo "===== 배포 시작 : $(date +%c) =====" >> $DEPLOY_LOG_PATH
 
