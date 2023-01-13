@@ -2,4 +2,4 @@ server:
   port: 8080
 spring:
   config:
-    import: security.yml
+    import: secret.yml
