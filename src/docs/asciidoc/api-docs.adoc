@@ -1,4 +1,4 @@
-= REST DOCS TEST(제목)
+= WEEDA API DOCS
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
