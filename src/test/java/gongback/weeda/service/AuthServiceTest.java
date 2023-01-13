@@ -2,10 +2,11 @@ package gongback.weeda.service;
 
 import gongback.weeda.api.controller.request.SignUpRequest;
 import gongback.weeda.common.TestProvider;
+import gongback.weeda.common.exception.WeedaApplicationException;
+import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.common.type.SocialType;
 import gongback.weeda.domain.user.entity.User;
 import gongback.weeda.service.dto.SignUpDto;
-import gongback.weeda.utils.CreateDtoUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +38,12 @@ class AuthServiceTest {
         // given
         User testUser = TestProvider.createTestUser();
         SignUpRequest testSignUpRequest = TestProvider.createTestSignUpRequest(testUser);
-        SignUpDto testSignUpDto = CreateDtoUtil.fromRequest(testSignUpRequest, SocialType.WEEDA);
+        SignUpDto testSignUpDto = DtoProvider.fromRequest(testSignUpRequest, SocialType.WEEDA);
         String encodedPassword = "testEncodedPassword";
 
         // when
         when(passwordEncoder.encode(testSignUpDto.password())).thenReturn(encodedPassword);
-        when(userService.saveUser(any())).thenReturn(Mono.just(CreateDtoUtil.fromUser(testUser)));
+        when(userService.saveUser(any())).thenReturn(Mono.just(DtoProvider.fromUser(testUser)));
 
         // then
         StepVerifier.create(authService.signUp(testSignUpDto))
@@ -57,12 +58,12 @@ class AuthServiceTest {
         String email = "test@test.com";
 
         // when
-        when(userService.checkEmail(email)).thenReturn(Mono.just(true));
+        when(userService.existsByEmail(email)).thenReturn(Mono.just(true));
 
         // then
         StepVerifier.create(authService.checkEmail(email))
-                .expectNextMatches(it -> it == true)
-                .verifyComplete();
+                .expectError(WeedaApplicationException.class)
+                .verify();
     }
 
     @Test
@@ -72,7 +73,7 @@ class AuthServiceTest {
         String email = "test@test.com";
 
         // when
-        when(userService.checkEmail(email)).thenReturn(Mono.just(false));
+        when(userService.existsByEmail(email)).thenReturn(Mono.just(false));
 
         // then
         StepVerifier.create(authService.checkEmail(email))
@@ -87,12 +88,12 @@ class AuthServiceTest {
         String nickname = "testUser";
 
         // when
-        when(userService.checkNickname(nickname)).thenReturn(Mono.just(true));
+        when(userService.existsByNickname(nickname)).thenReturn(Mono.just(true));
 
         // then
         StepVerifier.create(authService.checkNickname(nickname))
-                .expectNextMatches(it -> it == true)
-                .verifyComplete();
+                .expectError(WeedaApplicationException.class)
+                .verify();
     }
 
     @Test
@@ -102,7 +103,7 @@ class AuthServiceTest {
         String nickname = "testUser";
 
         // when
-        when(userService.checkNickname(nickname)).thenReturn(Mono.just(false));
+        when(userService.existsByNickname(nickname)).thenReturn(Mono.just(false));
 
         // then
         StepVerifier.create(authService.checkNickname(nickname))
