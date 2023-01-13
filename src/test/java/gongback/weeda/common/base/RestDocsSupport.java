@@ -47,6 +47,8 @@ public class RestDocsSupport {
     void setUp(ApplicationContext applicationContext, RestDocumentationContextProvider restDocumentation) {
         this.webTestClient = WebTestClient.bindToApplicationContext(applicationContext).configureClient()
                 .filter(documentationConfiguration(restDocumentation)
+                        .snippets().withEncoding("UTF-8")
+                        .and()
                         .operationPreprocessors()
                         .withRequestDefaults(
                                 modifyUris()
