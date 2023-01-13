@@ -49,7 +49,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(Mono.just(true));
 
         // then
-        StepVerifier.create(userService.checkEmail(email))
+        StepVerifier.create(userService.existsByEmail(email))
                 .expectNextMatches(it -> it == true)
                 .verifyComplete();
     }
@@ -64,7 +64,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(Mono.just(false));
 
         // then
-        StepVerifier.create(userService.checkEmail(email))
+        StepVerifier.create(userService.existsByEmail(email))
                 .expectNextMatches(it -> it == false)
                 .verifyComplete();
     }
@@ -79,7 +79,7 @@ class UserServiceTest {
         when(userRepository.existsByNickname(nickname)).thenReturn(Mono.just(true));
 
         // then
-        StepVerifier.create(userService.checkNickname(nickname))
+        StepVerifier.create(userService.existsByNickname(nickname))
                 .expectNextMatches(it -> it == true)
                 .verifyComplete();
     }
@@ -94,7 +94,7 @@ class UserServiceTest {
         when(userRepository.existsByNickname(nickname)).thenReturn(Mono.just(false));
 
         // then
-        StepVerifier.create(userService.checkNickname(nickname))
+        StepVerifier.create(userService.existsByNickname(nickname))
                 .expectNextMatches(it -> it == false)
                 .verifyComplete();
     }

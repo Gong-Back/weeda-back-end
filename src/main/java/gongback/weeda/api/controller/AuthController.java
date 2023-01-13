@@ -1,17 +1,16 @@
 package gongback.weeda.api.controller;
 
-import gongback.weeda.api.controller.request.EmailCheckRequest;
-import gongback.weeda.api.controller.request.NicknameCheckRequest;
+import gongback.weeda.api.controller.request.DuplicateEmailRequest;
+import gongback.weeda.api.controller.request.DuplicateNicknameRequest;
 import gongback.weeda.api.controller.request.SignUpRequest;
-import gongback.weeda.common.exception.ResponseCode;
-import gongback.weeda.common.exception.WeedaApplicationException;
+import gongback.weeda.common.provider.DtoProvider;
+import gongback.weeda.common.provider.EntityProvider;
 import gongback.weeda.common.type.SocialType;
 import gongback.weeda.service.AuthService;
-import gongback.weeda.utils.CreateDtoUtil;
-import gongback.weeda.utils.CreateEntityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -27,31 +26,19 @@ public class AuthController {
 
     @PostMapping("/sign-up")
     public Mono<ResponseEntity> signUp(@Valid SignUpRequest req) {
-        return authService.signUp(CreateDtoUtil.fromRequest(req, SocialType.WEEDA))
-                .thenReturn(CreateEntityUtil.created());
+        return authService.signUp(DtoProvider.fromRequest(req, SocialType.WEEDA))
+                .thenReturn(EntityProvider.created());
     }
 
     @PostMapping("/check-email")
-    public Mono<ResponseEntity> checkEmail(@Valid EmailCheckRequest req) {
+    public Mono<ResponseEntity> checkEmail(@Valid @RequestBody DuplicateEmailRequest req) {
         return authService.checkEmail(req.email())
-                .map(it -> {
-                    checkDuplicatedResult(it);
-                    return CreateEntityUtil.ok();
-                });
+                .thenReturn(EntityProvider.ok());
     }
 
     @PostMapping("/check-nickname")
-    public Mono<ResponseEntity> checkNickname(@Valid NicknameCheckRequest req) {
+    public Mono<ResponseEntity> checkNickname(@Valid @RequestBody DuplicateNicknameRequest req) {
         return authService.checkNickname(req.nickname())
-                .map(it -> {
-                    checkDuplicatedResult(it);
-                    return CreateEntityUtil.ok();
-                });
-    }
-
-    private void checkDuplicatedResult(Boolean isDuplicated) {
-        if (isDuplicated) {
-            throw new WeedaApplicationException(ResponseCode.DUPLICATED_ERROR);
-        }
+                .thenReturn(EntityProvider.ok());
     }
 }

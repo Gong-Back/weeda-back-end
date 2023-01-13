@@ -2,7 +2,7 @@ package gongback.weeda.api.controller.request;
 
 import javax.validation.constraints.NotEmpty;
 
-public record NicknameCheckRequest(
+public record DuplicateNicknameRequest(
         @NotEmpty String nickname
 ) {
 }

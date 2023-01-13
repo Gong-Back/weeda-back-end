@@ -1,4 +1,4 @@
-package gongback.weeda.utils;
+package gongback.weeda.common.provider;
 
 import gongback.weeda.api.controller.response.ApiResponse;
 import gongback.weeda.common.exception.ResponseCode;
@@ -7,7 +7,7 @@ import gongback.weeda.service.dto.SignUpDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class CreateEntityUtil {
+public class EntityProvider {
     public static User fromSignUpInfo(SignUpDto dto, String password) {
         return User.builder()
                 .email(dto.email())
@@ -22,7 +22,7 @@ public class CreateEntityUtil {
     }
 
     public static ResponseEntity ok() {
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(ApiResponse.of(ResponseCode.OK));
     }
 
     public static ResponseEntity created() {
