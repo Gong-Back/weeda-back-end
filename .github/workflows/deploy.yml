@@ -11,7 +11,7 @@ env:
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: CODE-DEPLOY-GROUP
   SECRET_YML: ${{ secrets.SECRET_YML }}
   SECRET_YML_DIR: src/main/resources
-  SECRET_YML_FILE_NAME: application-secret.yml
+  SECRET_YML_FILE_NAME: secret.yml
 
 jobs:
   build:
