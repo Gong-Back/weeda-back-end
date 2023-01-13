@@ -3,6 +3,7 @@ package gongback.weeda.common.base;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -16,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.function.Consumer;
 
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.snippet.Attributes.Attribute;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
@@ -24,6 +26,15 @@ public class RestDocsSupport {
 
     @Autowired
     protected WebTestClient webTestClient;
+
+    @Value("${weeda.protocol}")
+    private String protocol;
+
+    @Value("${weeda.host}")
+    private String host;
+
+    @Value("${weeda.port}")
+    private String port;
 
     protected final Attribute field(
             final String key,
@@ -35,7 +46,14 @@ public class RestDocsSupport {
     @BeforeEach
     void setUp(ApplicationContext applicationContext, RestDocumentationContextProvider restDocumentation) {
         this.webTestClient = WebTestClient.bindToApplicationContext(applicationContext).configureClient()
-                .filter(documentationConfiguration(restDocumentation))
+                .filter(documentationConfiguration(restDocumentation)
+                        .operationPreprocessors()
+                        .withRequestDefaults(
+                                modifyUris()
+                                        .scheme(protocol)
+                                        .host(host)
+                                        .port(Integer.parseInt(port))
+                        ))
                 .build();
     }
 
