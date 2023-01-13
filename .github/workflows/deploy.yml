@@ -27,7 +27,7 @@ jobs:
           java-version: 17
 
       - name: Copy secret.yml
-        run: echo $SECRET_YML | base64 --decode > $SECRET_YML_DIR/$SECRET_YML_FILE_NAME
+        run: echo $SECRET_YML > $SECRET_YML_DIR/$SECRET_YML_FILE_NAME
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
