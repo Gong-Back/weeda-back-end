@@ -1,7 +1,7 @@
 #!/bin/bash
 PROJECT_NAME="weeda"
-JAR_PATH="/home/ec2-user/$PROJECT_NAME/build/libs/*-SNAPSHOT.jar"
 BUILD_LIBS_PATH="/home/ec2-user/$PROJECT_NAME/build/libs/"
+JAR_PATH="$BUILD_LIBS_PATH*-SNAPSHOT.jar"
 DEPLOY_PATH=/home/ec2-user/$PROJECT_NAME/
 DEPLOY_LOG_PATH="/home/ec2-user/$PROJECT_NAME/log/deploy.log" # Deploy Log 파일
 DEPLOY_ERR_LOG_PATH="/home/ec2-user/$PROJECT_NAME/log/deploy_err.log" # Deploy Error Log 파일
@@ -9,7 +9,7 @@ APPLICATION_LOG_PATH="/home/ec2-user/$PROJECT_NAME/log/application.log" # Applic
 BUILD_JAR=$(ls $JAR_PATH)
 JAR_NAME=$(basename $BUILD_JAR)
 
-mkdir DEPLOY_PATH/log
+mkdir $DEPLOY_PATH/log
 
 echo "===== 배포 시작 : $(date +%c) =====" >> $DEPLOY_LOG_PATH
 
@@ -29,7 +29,7 @@ else
   kill -9 $CURRENT_PID
 fi
 
-DEPLOY_JAR=BUILD_LIBS_PATH$JAR_NAME
+DEPLOY_JAR=$BUILD_LIBS_PATH$JAR_NAME
 echo "> $DEPLOY_JAR 배포" >> $DEPLOY_LOG_PATH
 nohup java -jar -Dspring.profiles.active=prod $DEPLOY_JAR --server.port=8080 >> $APPLICATION_LOG_PATH 2> $DEPLOY_ERR_LOG_PATH & # & -> background exec
 
