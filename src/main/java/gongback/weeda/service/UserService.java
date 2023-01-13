@@ -1,9 +1,9 @@
 package gongback.weeda.service;
 
+import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.domain.user.entity.User;
 import gongback.weeda.domain.user.repository.UserRepository;
 import gongback.weeda.service.dto.UserResDto;
-import gongback.weeda.utils.CreateDtoUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,14 +18,14 @@ public class UserService {
 
     public Mono<UserResDto> saveUser(User user) {
         return userRepository.save(user)
-                .map(CreateDtoUtil::fromUser);
+                .map(DtoProvider::fromUser);
     }
 
-    public Mono<Boolean> checkEmail(String email) {
+    public Mono<Boolean> existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    public Mono<Boolean> checkNickname(String nickname) {
+    public Mono<Boolean> existsByNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
 }
