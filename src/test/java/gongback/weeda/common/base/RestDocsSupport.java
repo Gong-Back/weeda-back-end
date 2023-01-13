@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.payload.RequestFieldsSnippet;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.RequestParametersSnippet;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -37,12 +39,34 @@ public class RestDocsSupport {
                 .build();
     }
 
-    protected Consumer<EntityExchangeResult<byte[]>> getRequestParameterDocument(RequestParametersSnippet requestParametersSnippet) {
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestParametersSnippet requestParametersSnippet) {
         return WebTestClientRestDocumentation.document(
                 "{class-name}/{method-name}",
                 Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
                 Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                 requestParametersSnippet
+        );
+    }
+
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestParametersSnippet requestParametersSnippet,
+                                                                 ResponseFieldsSnippet responseFieldsSnippet) {
+        return WebTestClientRestDocumentation.document(
+                "{class-name}/{method-name}",
+                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                requestParametersSnippet,
+                responseFieldsSnippet
+        );
+    }
+
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestFieldsSnippet requestFieldsSnippet,
+                                                                 ResponseFieldsSnippet responseFieldsSnippet) {
+        return WebTestClientRestDocumentation.document(
+                "{class-name}/{method-name}",
+                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                requestFieldsSnippet,
+                responseFieldsSnippet
         );
     }
 }
