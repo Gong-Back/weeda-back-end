@@ -27,8 +27,6 @@ public class DocController {
 
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     public Resource docs() throws IOException {
-        log.info(resourceLoader.getResource("classpath:" + docsHtml).getURL().toString());
-        log.info(resourceLoader.getResource("classpath:").getURL().toString());
         return resourceLoader.getResource("classpath:" + docsHtml);
     }
 }
