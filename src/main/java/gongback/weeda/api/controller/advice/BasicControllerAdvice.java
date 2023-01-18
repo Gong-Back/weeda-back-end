@@ -32,8 +32,8 @@ public class BasicControllerAdvice {
 
     @ExceptionHandler(WeedaApplicationException.class)
     public Mono<ResponseEntity> weedaApplicationException(WeedaApplicationException e) {
-        log.error("[WeedaApplicationException]", e);
-        return Mono.just(EntityProvider.response(e.getResponseCode()));
+        log.error("[WeedaApplicationException] {}", e.getMsg(), e);
+        return Mono.just(EntityProvider.error(e.getResponseCode(), e.getMsg()));
     }
 
     @ExceptionHandler(RuntimeException.class)
