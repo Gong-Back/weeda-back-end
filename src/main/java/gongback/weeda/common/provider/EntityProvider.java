@@ -16,7 +16,7 @@ public class EntityProvider {
                 .nickname(dto.nickname())
                 .age(dto.age())
                 .gender(dto.gender())
-                .profileUrl(null)
+                .profileKey(null)
                 .socialType(dto.socialType().toString())
                 .build();
     }
@@ -29,8 +29,16 @@ public class EntityProvider {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(ResponseCode.CREATED));
     }
 
+    public static ResponseEntity error(ResponseCode responseCode, String errorMessage) {
+        HttpStatus httpStatus = HttpStatus.resolve(responseCode.getCode());
+        return ResponseEntity.status(httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus)
+                .body(ApiResponse.of(responseCode, errorMessage));
+    }
+
     public static ResponseEntity response(ResponseCode responseCode) {
-        return ResponseEntity.status(HttpStatus.resolve(responseCode.getCode())).body(ApiResponse.of(responseCode));
+        HttpStatus httpStatus = HttpStatus.resolve(responseCode.getCode());
+        return ResponseEntity.status(httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus)
+                .body(ApiResponse.of(responseCode));
     }
 
     public static <T> ResponseEntity response(ResponseCode responseCode, T data) {
