@@ -1,5 +1,5 @@
 [[Overview]]
-== *Overview*
+= *Overview*
 
 [[overview-http-status-codes]]
 === HTTP status codes
@@ -28,15 +28,19 @@
 | `409 DUPLICATED_ERROR`
 | Duplicated error
 
-| `430 REQUEST_VALIDATION_ERROR`
-| Request value validation error
-
 | `500 INTERNAL_SERVER_ERROR`
 | Internal server error
+
+| `1001 REQUEST_VALIDATION_ERROR`
+| Request value validation error
+
+| `1002 INVALID_PASSWORD`
+| Password is invalid
+
 |===
 
 [[overview-error-response]]
-=== Success Response Data
+=== *Success Response Data*
 
 |===
 | Field Name | Type | Description
@@ -56,7 +60,7 @@
 |===
 
 [[overview-error-response]]
-=== Error Response Data
+=== *Error Response Data*
 
 |===
 | Field Name | Type | Description
@@ -72,5 +76,16 @@
 | errors
 | Object
 | 오류 데이터
+
+|===
+
+[[Invalid-Token-Response]]
+=== *Invalid Token Response*
+
+|===
+| code | msg
+
+| 401
+| Token is invalid
 
 |===
