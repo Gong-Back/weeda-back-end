@@ -2,17 +2,15 @@ package gongback.weeda.common.jwt;
 
 import lombok.Getter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
+import org.springframework.security.core.authority.AuthorityUtils;
 
 @Getter
 public class BearerToken extends AbstractAuthenticationToken {
 
     private final String jwt;
 
-    public BearerToken(Collection<? extends GrantedAuthority> authorities, String jwt) {
-        super(authorities);
+    public BearerToken(String jwt) {
+        super(AuthorityUtils.NO_AUTHORITIES);
         this.jwt = jwt;
     }
 

@@ -26,16 +26,16 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
         return Mono.justOrEmpty(authentication)
                 .filter(auth -> auth instanceof BearerToken)
                 .cast(BearerToken.class)
-                .flatMap(it -> validate(it))
-                .onErrorMap(it -> new CustomAuthenticationException(it.getMessage()));
+                .flatMap(token -> validate(token))
+                .onErrorMap(error -> new CustomAuthenticationException(error.getMessage(), error));
     }
 
     private Mono<Authentication> validate(BearerToken token) {
         String username = jwtSupport.getUsername(token);
         return detailsService.findByUsername(username)
-                .filter(it -> jwtSupport.isValid(username, it))
+                .filter(userDetails -> jwtSupport.isValid(username, userDetails))
                 .switchIfEmpty(Mono.error(new WeedaApplicationException(ResponseCode.INVALID_TOKEN)))
-                .map(it -> new UsernamePasswordAuthenticationToken(it.getUsername(), it.getPassword(), it.getAuthorities()));
+                .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities()));
     }
 
 }

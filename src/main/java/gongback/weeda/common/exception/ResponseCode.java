@@ -18,7 +18,8 @@ public enum ResponseCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal server error"),
 
     REQUEST_VALIDATION_ERROR(1001, "Request value validation error"),
-    INVALID_PASSWORD(1002, "Password is invalid");
+    INVALID_PASSWORD(1002, "Password is invalid"),
+    EXPIRED_TOKEN(1003, "Token is expired");
 
     private final int code;
     private final String msg;

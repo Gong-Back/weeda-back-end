@@ -6,14 +6,12 @@ import gongback.weeda.common.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -28,7 +26,7 @@ public class JwtSupport {
         this.CLAIMS_KEY = jwtProperties.getClaimsKey();
     }
 
-    public BearerToken generateJwt(String email, List<String> roles) {
+    public BearerToken generateJwt(String email) {
         Claims claims = Jwts.claims();
         claims.put(CLAIMS_KEY, email);
 
@@ -39,11 +37,7 @@ public class JwtSupport {
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
 
-        return new BearerToken(
-//                roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toList()),
-                List.of(new SimpleGrantedAuthority("ROLE_USER")),
-                jwt
-        );
+        return new BearerToken(jwt);
     }
 
     public boolean isValid(String username, UserDetails userDetails) {
@@ -60,8 +54,10 @@ public class JwtSupport {
             return Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build().parseClaimsJws(token.getJwt()).getBody();
-        } catch (MalformedJwtException | ExpiredJwtException e) {
+        } catch (MalformedJwtException e) {
             throw new WeedaApplicationException(ResponseCode.INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new WeedaApplicationException(ResponseCode.EXPIRED_TOKEN);
         }
     }
 
