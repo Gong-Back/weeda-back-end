@@ -1,5 +1,6 @@
 package gongback.weeda.domain.user.entity;
 
+import gongback.weeda.domain.base.entity.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Getter
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     private Long id;
     private String email;
