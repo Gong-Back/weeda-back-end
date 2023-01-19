@@ -37,6 +37,9 @@
 | `1002 INVALID_PASSWORD`
 | Password is invalid
 
+| `1003 EXPIRED_TOKEN`
+| Token is expired
+
 |===
 
 [[overview-error-response]]
@@ -87,5 +90,16 @@
 
 | 401
 | Token is invalid
+
+|===
+
+[[Expired-Token-Response]]
+=== *Invalid Token Response*
+
+|===
+| code | msg
+
+| 1003
+| Token is expired
 
 |===
