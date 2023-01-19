@@ -8,6 +8,7 @@ import gongback.weeda.common.jwt.JwtAuthenticationManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 @Configuration
 @EnableWebFluxSecurity
 @RequiredArgsConstructor
+@EnableReactiveMethodSecurity
 public class SecurityConfig {
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
