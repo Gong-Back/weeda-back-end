@@ -3,6 +3,7 @@ package gongback.weeda.common;
 import gongback.weeda.api.controller.request.SignInRequest;
 import gongback.weeda.api.controller.request.SignUpRequest;
 import gongback.weeda.common.type.SocialType;
+import gongback.weeda.domain.role.entity.Role;
 import gongback.weeda.domain.user.entity.User;
 import gongback.weeda.service.dto.JwtDto;
 
@@ -23,6 +24,13 @@ public class TestProvider {
                 .age(20)
                 .gender("m")
                 .socialType(SocialType.WEEDA.toString())
+                .build();
+    }
+
+    public static Role createTestRole() {
+        return Role.builder()
+                .name("ROLE_USER")
+                .description("TEST ROLE")
                 .build();
     }
 

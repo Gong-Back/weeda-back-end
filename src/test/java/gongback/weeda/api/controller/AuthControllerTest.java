@@ -56,7 +56,7 @@ class AuthControllerTest extends ControllerTestSupport {
 
         // when
         when(authService.signUp(DtoProvider.fromRequest(testSignUpRequest, SocialType.WEEDA)))
-                .thenReturn(Mono.just(DtoProvider.fromUser(testUser)));
+                .thenReturn(Mono.empty());
 
         // then
         webTestClient.post()
