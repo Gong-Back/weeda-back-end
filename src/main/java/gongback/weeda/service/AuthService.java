@@ -7,7 +7,6 @@ import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.common.provider.EntityProvider;
 import gongback.weeda.service.dto.JwtDto;
 import gongback.weeda.service.dto.SignUpDto;
-import gongback.weeda.service.dto.UserResDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,20 +20,27 @@ public class AuthService {
 
     private final JwtSupport jwtSupport;
     private final UserService userService;
+    private final RoleService roleService;
+    private final UserRoleService userRoleService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public Mono<UserResDto> signUp(SignUpDto signUpDto) {
+    private final String BASIC_ROLE = "ROLE_USER";
+
+    public Mono<Void> signUp(SignUpDto signUpDto) {
         return userService.saveUser(EntityProvider.fromSignUpInfo(
-                signUpDto,
-                passwordEncoder.encode(signUpDto.password()))
-        );
+                        signUpDto,
+                        passwordEncoder.encode(signUpDto.password()))
+                )
+                .zipWith(roleService.findByName(BASIC_ROLE))
+                .flatMap(it -> userRoleService.save(it.getT1().id(), it.getT2().id()))
+                .then();
     }
 
     public Mono<JwtDto> signIn(String email, String password) {
         return userService.findByEmail(email)
-                .filter(it -> isValidPassword(password, it.Password()))
+                .filter(userResDto -> isValidPassword(password, userResDto.Password()))
                 .switchIfEmpty(Mono.error(new WeedaApplicationException(ResponseCode.INVALID_PASSWORD)))
-                .map(it -> DtoProvider.fromBearerToken(jwtSupport.generateJwt(email, null)));
+                .map(roleNameList -> DtoProvider.fromBearerToken(jwtSupport.generateJwt(email)));
     }
 
     private boolean isValidPassword(String password, String savedPassword) {
