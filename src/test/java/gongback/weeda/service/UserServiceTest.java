@@ -98,4 +98,19 @@ class UserServiceTest {
                 .expectNextMatches(it -> it == false)
                 .verifyComplete();
     }
+
+    @Test
+    @DisplayName("유저 찾기 성공(UserService)")
+    void givenEmail_whenFindUserByEmail_thenSuccess() throws Exception {
+        // given
+        User testUser = TestProvider.createTestUser();
+
+        // when
+        when(userRepository.findByEmail(testUser.getEmail())).thenReturn(Mono.just(testUser));
+
+        // then
+        StepVerifier.create(userService.findByEmail(testUser.getEmail()))
+                .expectNextMatches(it -> it.email().equals(testUser.getEmail()))
+                .verifyComplete();
+    }
 }

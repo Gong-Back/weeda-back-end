@@ -2,13 +2,16 @@ package gongback.weeda.common.provider;
 
 import gongback.weeda.api.controller.response.ApiResponse;
 import gongback.weeda.common.exception.ResponseCode;
+import gongback.weeda.domain.role.entity.Role;
+import gongback.weeda.domain.role.entity.UserRole;
 import gongback.weeda.domain.user.entity.User;
+import gongback.weeda.service.dto.RoleDto;
 import gongback.weeda.service.dto.SignUpDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class EntityProvider {
-    public static User fromSignUpInfo(SignUpDto dto, String password) {
+    public static User fromSignUpInfo(final SignUpDto dto, final String password) {
         return User.builder()
                 .email(dto.email())
                 .password(password)
@@ -16,8 +19,22 @@ public class EntityProvider {
                 .nickname(dto.nickname())
                 .age(dto.age())
                 .gender(dto.gender())
-                .profileUrl(null)
+                .profileKey(null)
                 .socialType(dto.socialType().toString())
+                .build();
+    }
+
+    public static Role fromRoleDto(final RoleDto roleDto) {
+        return Role.builder()
+                .name(roleDto.name())
+                .description(roleDto.description())
+                .build();
+    }
+
+    public static UserRole fromUserRoleInfo(final Long userId, final Long roleId) {
+        return UserRole.builder()
+                .userId(userId)
+                .roleId(roleId)
                 .build();
     }
 
@@ -29,11 +46,25 @@ public class EntityProvider {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(ResponseCode.CREATED));
     }
 
-    public static ResponseEntity response(ResponseCode responseCode) {
-        return ResponseEntity.status(HttpStatus.resolve(responseCode.getCode())).body(ApiResponse.of(responseCode));
+    public static ResponseEntity error(final ResponseCode responseCode) {
+        HttpStatus httpStatus = HttpStatus.resolve(responseCode.getCode());
+        return ResponseEntity.status(httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus)
+                .body(ApiResponse.of(responseCode));
     }
 
-    public static <T> ResponseEntity response(ResponseCode responseCode, T data) {
+    public static ResponseEntity error(final ResponseCode responseCode, final String errorMessage) {
+        HttpStatus httpStatus = HttpStatus.resolve(responseCode.getCode());
+        return ResponseEntity.status(httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus)
+                .body(ApiResponse.of(responseCode, errorMessage));
+    }
+
+    public static ResponseEntity response(final ResponseCode responseCode) {
+        HttpStatus httpStatus = HttpStatus.resolve(responseCode.getCode());
+        return ResponseEntity.status(httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus)
+                .body(ApiResponse.of(responseCode));
+    }
+
+    public static <T> ResponseEntity response(final ResponseCode responseCode, final T data) {
         HttpStatus resolve = HttpStatus.resolve(responseCode.getCode());
         if (resolve == null) {
             return ResponseEntity.badRequest().body(ApiResponse.of(responseCode, data));

@@ -17,6 +17,10 @@ public class ApiResponse<T> {
         return ApiResponse.of(responseCode.getCode(), responseCode.getMsg(), null);
     }
 
+    public static ApiResponse of(ResponseCode responseCode, String message) {
+        return ApiResponse.of(responseCode.getCode(), message, null);
+    }
+
     public static <T> ApiResponse<T> of(ResponseCode responseCode, T data) {
         return ApiResponse.of(responseCode.getCode(), responseCode.getMsg(), data);
     }

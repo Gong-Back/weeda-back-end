@@ -1,10 +1,12 @@
 package gongback.weeda.service;
 
 import gongback.weeda.api.controller.request.SignUpRequest;
-import gongback.weeda.common.TestProvider;
 import gongback.weeda.common.exception.WeedaApplicationException;
+import gongback.weeda.common.jwt.BearerToken;
+import gongback.weeda.common.jwt.JwtSupport;
 import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.common.type.SocialType;
+import gongback.weeda.domain.role.entity.Role;
 import gongback.weeda.domain.user.entity.User;
 import gongback.weeda.service.dto.SignUpDto;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static gongback.weeda.common.TestProvider.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +30,16 @@ class AuthServiceTest {
     AuthService authService;
 
     @Mock
+    JwtSupport jwtSupport;
+
+    @Mock
     UserService userService;
+
+    @Mock
+    RoleService roleService;
+
+    @Mock
+    UserRoleService userRoleService;
 
     @Mock
     BCryptPasswordEncoder passwordEncoder;
@@ -36,18 +48,21 @@ class AuthServiceTest {
     @DisplayName("회원가입 성공(AuthService)")
     void givenAllInfo_thenSuccess() throws Exception {
         // given
-        User testUser = TestProvider.createTestUser();
-        SignUpRequest testSignUpRequest = TestProvider.createTestSignUpRequest(testUser);
+        User testUser = createTestUser();
+        Role testRole = createTestRole();
+        SignUpRequest testSignUpRequest = createTestSignUpRequest(testUser);
         SignUpDto testSignUpDto = DtoProvider.fromRequest(testSignUpRequest, SocialType.WEEDA);
         String encodedPassword = "testEncodedPassword";
 
         // when
         when(passwordEncoder.encode(testSignUpDto.password())).thenReturn(encodedPassword);
         when(userService.saveUser(any())).thenReturn(Mono.just(DtoProvider.fromUser(testUser)));
+        when(roleService.findByName(testRole.getName())).thenReturn(Mono.just(DtoProvider.fromRole(testRole)));
+        when(userRoleService.save(testUser.getId(), testRole.getId())).thenReturn(Mono.empty());
 
         // then
         StepVerifier.create(authService.signUp(testSignUpDto))
-                .expectNextMatches(it -> it.email() == testUser.getEmail())
+                .expectNextCount(0)
                 .verifyComplete();
     }
 
@@ -108,6 +123,24 @@ class AuthServiceTest {
         // then
         StepVerifier.create(authService.checkNickname(nickname))
                 .expectNextMatches(it -> it == false)
+                .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("로그인 성공(AuthService)")
+    void givenAllInfo_whenSignIn_thenSuccess() throws Exception {
+        // given
+        User testUser = createTestUser();
+        String token = "testToken";
+
+        // when
+        when(userService.findByEmail(testUser.getEmail())).thenReturn(Mono.just(DtoProvider.fromUser(testUser)));
+        when(passwordEncoder.matches(any(), any())).thenReturn(true);
+        when(jwtSupport.generateJwt(testUser.getEmail())).thenReturn(new BearerToken(token));
+
+        // then
+        StepVerifier.create(authService.signIn(testUser.getEmail(), testUser.getPassword()))
+                .expectNextMatches(it -> it.token() == token)
                 .verifyComplete();
     }
 }
