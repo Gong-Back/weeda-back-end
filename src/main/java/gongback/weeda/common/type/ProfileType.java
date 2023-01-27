@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ProfileType {
-    LOCAL("default")
+    LOCAL("local")
     , PROD("prod")
     ;
 
