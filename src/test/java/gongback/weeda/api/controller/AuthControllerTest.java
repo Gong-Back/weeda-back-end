@@ -15,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
@@ -26,12 +27,13 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 import static gongback.weeda.common.TestProvider.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.key;
 
 @WebFluxTest(AuthController.class)
 class AuthControllerTest extends ControllerTestSupport {
@@ -41,7 +43,7 @@ class AuthControllerTest extends ControllerTestSupport {
 
     @Test
     @WithMockUser
-    @DisplayName("회원가입 성공(Controller)")
+    @DisplayName("회원가입 성공(Controller) - 프로필 이미지 없는 경우")
     void givenAllInfo_thenSuccess() throws Exception {
         // given
         User testUser = createTestUser();
@@ -73,6 +75,47 @@ class AuthControllerTest extends ControllerTestSupport {
                         parameterWithName("nickname").description("닉네임").attributes(field(EXAMPLE, testUser.getNickname())),
                         parameterWithName("age").description("나이").attributes(field(EXAMPLE, String.valueOf(testUser.getAge()))),
                         parameterWithName("gender").description("성별").attributes(field(EXAMPLE, testUser.getGender()))
+                )))
+                .consumeWith(System.out::println);
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("회원가입 성공(Controller) - 프로필 이미지 있는 경우")
+    void givenAllInfo_whenProfileExists_thenSuccess() throws Exception {
+        // given
+        User testUser = createProfileTestUser();
+
+        LinkedMultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
+        formData.put("email", List.of(testUser.getEmail()));
+        formData.put("password", List.of(testUser.getPassword()));
+        formData.put("name", List.of(testUser.getName()));
+        formData.put("nickname", List.of(testUser.getNickname()));
+        formData.put("age", List.of(testUser.getAge().toString()));
+        formData.put("gender", List.of(testUser.getGender()));
+        formData.put("profile", List.of(new FileSystemResource("/Users/jw/Documents/project/weeda-back-end/src/test/resources/image/test-image.png")));
+
+        // when
+        when(authService.signUp(any()))
+                .thenReturn(Mono.empty());
+
+        // then
+        webTestClient.post()
+                .uri("/api/v1/auth/sign-up")
+                .body(BodyInserters.fromMultipartData(formData))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("code").isEqualTo(ResponseCode.CREATED.getCode())
+                .consumeWith(getDocument(
+                        requestParts(
+                        partWithName("email").description("이메일").attributes(key(EXAMPLE).value(testUser.getEmail()), key(LENGTH).value("0-20")),
+                        partWithName("password").description("비밀번호").attributes(key(EXAMPLE).value(testUser.getPassword()), key(LENGTH).value("10-15")),
+                        partWithName("name").description("이름").attributes(key(EXAMPLE).value(testUser.getName())),
+                        partWithName("nickname").description("닉네임").attributes(key(EXAMPLE).value(testUser.getNickname())),
+                        partWithName("age").description("나이").attributes(key(EXAMPLE).value(testUser.getAge())),
+                        partWithName("gender").description("성별").attributes(key(EXAMPLE).value(testUser.getGender())),
+                        partWithName("profile").description("프로필 이미지").optional()
                 )))
                 .consumeWith(System.out::println);
     }

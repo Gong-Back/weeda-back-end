@@ -10,7 +10,7 @@ operation::auth-controller-test/given-all-info_then-success[snippets='http-reque
 
 ==== *1-2* 프로필 O
 
-==== 구현 X
+operation::auth-controller-test/given-all-info_when-profile-exists_then-success[snippets='http-request,request-parts,response-body']
 
 ==== *1-3* 이메일, 비밀번호 Validation 에러
 
