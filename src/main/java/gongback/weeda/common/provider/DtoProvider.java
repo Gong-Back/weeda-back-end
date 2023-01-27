@@ -6,10 +6,7 @@ import gongback.weeda.common.jwt.BearerToken;
 import gongback.weeda.common.type.SocialType;
 import gongback.weeda.domain.role.entity.Role;
 import gongback.weeda.domain.user.entity.User;
-import gongback.weeda.service.dto.JwtDto;
-import gongback.weeda.service.dto.RoleDto;
-import gongback.weeda.service.dto.SignUpDto;
-import gongback.weeda.service.dto.UserResDto;
+import gongback.weeda.service.dto.*;
 
 public class DtoProvider {
     public static SignUpDto fromRequest(final SignUpRequest req, final SocialType socialType) {
@@ -31,5 +28,9 @@ public class DtoProvider {
 
     public static RoleDto fromRole(final Role role) {
         return new RoleDto(role.getId(), role.getName(), role.getDescription());
+    }
+
+    public static ProfileDto fromProfileInfo(final String fileKey, final String originalFileName, final String serverFileName) {
+        return new ProfileDto(fileKey, serverFileName, originalFileName);
     }
 }

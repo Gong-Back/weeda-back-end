@@ -7,6 +7,7 @@ import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.common.provider.EntityProvider;
 import gongback.weeda.service.dto.JwtDto;
 import gongback.weeda.service.dto.SignUpDto;
+import gongback.weeda.service.type.FileType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,15 +23,28 @@ public class AuthService {
     private final UserService userService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
+    private final ProfileService profileService;
     private final BCryptPasswordEncoder passwordEncoder;
-
-    private final String BASIC_ROLE = "ROLE_USER";
+    private static final String BASIC_ROLE = "ROLE_USER";
 
     public Mono<Void> signUp(SignUpDto signUpDto) {
-        return userService.saveUser(EntityProvider.fromSignUpInfo(
-                        signUpDto,
-                        passwordEncoder.encode(signUpDto.password()))
-                )
+        if (signUpDto.profile() == null) {
+            return userService.saveUser(EntityProvider.fromSignUpInfo(
+                            signUpDto,
+                            passwordEncoder.encode(signUpDto.password()),
+                            1L))
+                    .zipWith(roleService.findByName(BASIC_ROLE))
+                    .flatMap(it -> userRoleService.save(it.getT1().id(), it.getT2().id()))
+                    .then();
+        }
+
+        return profileService.uploadProfile(signUpDto.profile(), FileType.PROFILE)
+                .flatMap(profileId -> userService.saveUser(
+                        EntityProvider.fromSignUpInfo(
+                                signUpDto,
+                                passwordEncoder.encode(signUpDto.password()),
+                                profileId)
+                ))
                 .zipWith(roleService.findByName(BASIC_ROLE))
                 .flatMap(it -> userRoleService.save(it.getT1().id(), it.getT2().id()))
                 .then();

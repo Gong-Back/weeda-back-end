@@ -2,16 +2,18 @@ package gongback.weeda.common.provider;
 
 import gongback.weeda.api.controller.response.ApiResponse;
 import gongback.weeda.common.exception.ResponseCode;
+import gongback.weeda.domain.file.entity.Profile;
 import gongback.weeda.domain.role.entity.Role;
 import gongback.weeda.domain.role.entity.UserRole;
 import gongback.weeda.domain.user.entity.User;
+import gongback.weeda.service.dto.ProfileDto;
 import gongback.weeda.service.dto.RoleDto;
 import gongback.weeda.service.dto.SignUpDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class EntityProvider {
-    public static User fromSignUpInfo(final SignUpDto dto, final String password) {
+    public static User fromSignUpInfo(SignUpDto dto, String password, Long profileId) {
         return User.builder()
                 .email(dto.email())
                 .password(password)
@@ -19,8 +21,16 @@ public class EntityProvider {
                 .nickname(dto.nickname())
                 .age(dto.age())
                 .gender(dto.gender())
-                .profileKey(null)
                 .socialType(dto.socialType().toString())
+                .profileId(profileId)
+                .build();
+    }
+
+    public static Profile fromProfileDto(final ProfileDto profileDto) {
+        return Profile.builder()
+                .fileKey(profileDto.fileKey())
+                .serverFileName(profileDto.serverFileName())
+                .originalFileName(profileDto.originalFileName())
                 .build();
     }
 

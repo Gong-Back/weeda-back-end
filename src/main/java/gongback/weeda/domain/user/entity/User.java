@@ -20,18 +20,18 @@ public class User extends BaseTimeEntity {
     private String nickname;
     private String gender;
     private Integer age;
-    private String profileKey;
     private String socialType;
+    private Long profileId;
 
     @Builder
-    public User(String email, String password, String name, String nickname, String gender, Integer age, String profileKey, String socialType) {
+    public User(String email, String password, String name, String nickname, String gender, Integer age, String socialType, Long profileId) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.nickname = nickname;
         this.gender = gender;
         this.age = age;
-        this.profileKey = profileKey;
         this.socialType = socialType;
+        this.profileId = profileId;
     }
 }
