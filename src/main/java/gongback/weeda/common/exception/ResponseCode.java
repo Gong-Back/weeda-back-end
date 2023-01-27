@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
 @Getter
 @AllArgsConstructor
 public enum ResponseCode {
@@ -23,4 +25,11 @@ public enum ResponseCode {
 
     private final int code;
     private final String msg;
+
+    public static ResponseCode convertResponseCode(int statusCode) {
+        return Arrays.stream(ResponseCode.values())
+                .filter(responseCode -> responseCode.code == statusCode)
+                .findFirst()
+                .orElse(INTERNAL_SERVER_ERROR);
+    }
 }
