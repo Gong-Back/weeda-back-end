@@ -14,3 +14,4 @@ endif::[]
 
 include::overview.adoc[]
 include::auth.adoc[]
+include::file.adoc[]

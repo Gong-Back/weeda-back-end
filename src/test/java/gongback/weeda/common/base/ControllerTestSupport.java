@@ -14,6 +14,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.RequestParametersSnippet;
+import org.springframework.restdocs.request.RequestPartsSnippet;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -61,6 +62,15 @@ public class ControllerTestSupport {
                                         .port(Integer.parseInt(port))
                         ))
                 .build();
+    }
+
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestPartsSnippet requestPartsSnippet) {
+        return WebTestClientRestDocumentation.document(
+                "{class-name}/{method-name}",
+                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                requestPartsSnippet
+        );
     }
 
     protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestParametersSnippet requestParametersSnippet) {

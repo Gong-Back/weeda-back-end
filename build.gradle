@@ -53,6 +53,15 @@ dependencies {
     // rest-docs
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
+
+    // configuration-processor
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // nio client
+    implementation group: 'software.amazon.awssdk', name: 'netty-nio-client', version: '2.19.16'
+
+    // s3
+    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.19.16'
 }
 
 test {
