@@ -24,7 +24,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import static gongback.weeda.common.TestProvider.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -85,6 +90,15 @@ class AuthControllerTest extends ControllerTestSupport {
     void givenAllInfo_whenProfileExists_thenSuccess() throws Exception {
         // given
         User testUser = createProfileTestUser();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write("It is temp Image Byte Codes.\n".getBytes());
+
+        Path dirPath = Path.of(Paths.get("").toAbsolutePath() + "/profile");
+        String randomKey = UUID.randomUUID().toString();
+        Path tempFilePath = Path.of(dirPath + randomKey);
+
+        Files.createDirectories(dirPath);
+        Files.write(tempFilePath, outputStream.toByteArray());
 
         LinkedMultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
         formData.put("email", List.of(testUser.getEmail()));
@@ -93,7 +107,7 @@ class AuthControllerTest extends ControllerTestSupport {
         formData.put("nickname", List.of(testUser.getNickname()));
         formData.put("age", List.of(testUser.getAge().toString()));
         formData.put("gender", List.of(testUser.getGender()));
-        formData.put("profile", List.of(new FileSystemResource("/Users/jw/Documents/project/weeda-back-end/src/test/resources/image/test-image.png")));
+        formData.put("profile", List.of(new FileSystemResource(tempFilePath)));
 
         // when
         when(authService.signUp(any()))
@@ -118,6 +132,9 @@ class AuthControllerTest extends ControllerTestSupport {
                         partWithName("profile").description("프로필 이미지").optional()
                 )))
                 .consumeWith(System.out::println);
+
+        // post-process
+        Files.delete(tempFilePath);
     }
 
     @Test
