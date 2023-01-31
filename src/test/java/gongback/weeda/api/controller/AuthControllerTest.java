@@ -90,6 +90,7 @@ class AuthControllerTest extends ControllerTestSupport {
     void givenAllInfo_whenProfileExists_thenSuccess() throws Exception {
         // given
         User testUser = createProfileTestUser();
+        
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write("It is temp Image Byte Codes.\n".getBytes());
 
