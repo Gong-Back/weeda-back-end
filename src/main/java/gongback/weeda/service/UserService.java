@@ -1,5 +1,7 @@
 package gongback.weeda.service;
 
+import gongback.weeda.common.exception.ResponseCode;
+import gongback.weeda.common.exception.WeedaApplicationException;
 import gongback.weeda.common.provider.DtoProvider;
 import gongback.weeda.domain.user.entity.User;
 import gongback.weeda.domain.user.repository.UserRepository;
@@ -18,6 +20,12 @@ public class UserService {
 
     public Mono<UserResDto> saveUser(User user) {
         return userRepository.save(user)
+                .map(DtoProvider::fromUser);
+    }
+
+    public Mono<UserResDto> findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .switchIfEmpty(Mono.error(new WeedaApplicationException(ResponseCode.NOT_FOUND, "User from requested email")))
                 .map(DtoProvider::fromUser);
     }
 

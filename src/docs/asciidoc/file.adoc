@@ -1,0 +1,7 @@
+[[File-API]]
+= *File API*
+
+[[이미지URL조회-API]]
+== *1. 이미지 URL 조회 - API*
+
+operation::file-controller-test/given-file-key_then-success[snippets='http-request,request-parameters,response-body']

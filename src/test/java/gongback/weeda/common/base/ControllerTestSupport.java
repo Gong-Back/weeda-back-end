@@ -1,16 +1,20 @@
 package gongback.weeda.common.base;
 
+import gongback.weeda.common.config.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.headers.ResponseHeadersSnippet;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.payload.RequestFieldsSnippet;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.restdocs.request.RequestParametersSnippet;
+import org.springframework.restdocs.request.RequestPartsSnippet;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -21,8 +25,9 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.snippet.Attributes.Attribute;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
+@Import(TestConfig.class)
 @ExtendWith(RestDocumentationExtension.class)
-public class RestDocsSupport {
+public class ControllerTestSupport {
 
     @Autowired
     protected WebTestClient webTestClient;
@@ -59,6 +64,15 @@ public class RestDocsSupport {
                 .build();
     }
 
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestPartsSnippet requestPartsSnippet) {
+        return WebTestClientRestDocumentation.document(
+                "{class-name}/{method-name}",
+                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                requestPartsSnippet
+        );
+    }
+
     protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestParametersSnippet requestParametersSnippet) {
         return WebTestClientRestDocumentation.document(
                 "{class-name}/{method-name}",
@@ -87,6 +101,19 @@ public class RestDocsSupport {
                 Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
                 requestFieldsSnippet,
                 responseFieldsSnippet
+        );
+    }
+
+    protected Consumer<EntityExchangeResult<byte[]>> getDocument(RequestFieldsSnippet requestFieldsSnippet,
+                                                                 ResponseFieldsSnippet responseFieldsSnippet,
+                                                                 ResponseHeadersSnippet responseHeadersSnippet) {
+        return WebTestClientRestDocumentation.document(
+                "{class-name}/{method-name}",
+                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
+                requestFieldsSnippet,
+                responseFieldsSnippet,
+                responseHeadersSnippet
         );
     }
 }

@@ -7,6 +7,7 @@ import gongback.weeda.common.exception.WeedaApplicationException;
 import gongback.weeda.common.provider.EntityProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
@@ -32,8 +33,14 @@ public class BasicControllerAdvice {
 
     @ExceptionHandler(WeedaApplicationException.class)
     public Mono<ResponseEntity> weedaApplicationException(WeedaApplicationException e) {
-        log.error("[WeedaApplicationException]", e);
-        return Mono.just(EntityProvider.response(e.getResponseCode()));
+        log.error("[WeedaApplicationException] {}", e.getMsg(), e);
+        return Mono.just(EntityProvider.error(e.getResponseCode(), e.getMsg()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public Mono<ResponseEntity> accessDeniedExceptionException(AccessDeniedException e) {
+        log.error("[AccessDeniedException] {}", e.getMessage(), e);
+        return Mono.just(EntityProvider.error(ResponseCode.INVALID_PERMISSION));
     }
 
     @ExceptionHandler(RuntimeException.class)
